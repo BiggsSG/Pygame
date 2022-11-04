@@ -41,6 +41,7 @@ while not done:
     # -- Draw here 
     pygame.draw.rect(screen, BLUE, (220,165,200,150))
     pygame.draw.circle(screen, YELLOW, (sun_x, sun_y), 40, 0)
+    pygame.draw.rect(screen, BLUE, (640,480,140,20))
     # -- flip display to reveal new position of objects
     pygame.display.flip() 
     # - The clock ticks over 
