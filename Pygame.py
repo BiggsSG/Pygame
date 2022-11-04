@@ -1,10 +1,13 @@
 import pygame
+import time
 # -- Global Constants
 
 # -- Colours
 BLACK = (0,0,0)
 WHITE = (255,255,255)
 BLUE = (50,50,255)
+DARK_BLUE = (0,0,55)
+LIGHT_BLUE = (68,85,90)
 YELLOW = (255,255,0)
 
 # -- Initialise PyGame
@@ -33,15 +36,18 @@ while not done:
 
     # -- Game logic goes after this comment 
     sun_x = sun_x + 5
-    if sun_x > 640:
-        sun_x = 0 
+    if sun_x > 900:
+        screen.fill (DARK_BLUE)
+        time.sleep(5)
+        sun_x = 0
+        screen.fill (LIGHT_BLUE)
+        
     #End If
     # -- Screen background is BLACK 
-    screen.fill (BLACK) 
+    screen.fill (BLACK)
     # -- Draw here 
     pygame.draw.rect(screen, BLUE, (220,165,200,150))
     pygame.draw.circle(screen, YELLOW, (sun_x, sun_y), 40, 0)
-    pygame.draw.rect(screen, BLUE, (640,480,140,20))
     # -- flip display to reveal new position of objects
     pygame.display.flip() 
     # - The clock ticks over 
