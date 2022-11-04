@@ -17,28 +17,32 @@ screen = pygame.display.set_mode(size)
 pygame.display.set_caption("House")
 # -- Exit game flag set to false
 done = False 
-sun_x = 40 
+sun_x = 0 
 sun_y = 100
 # -- Manages how fast screen refreshes
 clock = pygame.time.Clock() 
 
 ### -- Game Loop 
 while not done: 
-        # -- User input and controls 
-        for event in pygame.event.get(): 
-            if event.type == pygame.QUIT: 
-                done = True 
-            #End If 
-#Next event 
-# -- Game logic goes after this comment 
-sun_x = sun_x + 5
-# -- Screen background is BLACK 
-screen.fill (BLACK) 
-# -- Draw here 
-pygame.draw.rect(screen, BLUE, (220,165,200,150))
-pygame.draw.circle(screen, YELLOW, (sun_x, sun_y), 40, 0)
-# -- flip display to reveal new position of objects
-pygame.display.flip() 
-# - The clock ticks over 
-clock.tick(60) 
+    # -- User input and controls 
+    for event in pygame.event.get(): 
+        if event.type == pygame.QUIT: 
+            done = True 
+        #End If 
+    #Next event 
+
+    # -- Game logic goes after this comment 
+    sun_x = sun_x + 5
+    if sun_x > 640:
+        sun_x = 0 
+    #End If
+    # -- Screen background is BLACK 
+    screen.fill (BLACK) 
+    # -- Draw here 
+    pygame.draw.rect(screen, BLUE, (220,165,200,150))
+    pygame.draw.circle(screen, YELLOW, (sun_x, sun_y), 40, 0)
+    # -- flip display to reveal new position of objects
+    pygame.display.flip() 
+    # - The clock ticks over 
+    clock.tick(60) 
 #End While - End of game loop pygame.
