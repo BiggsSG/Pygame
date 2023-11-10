@@ -343,10 +343,15 @@ while not done:
         if click_detectorf:
             damage = get_damage()
             Enemeyr.enemy_attacked(damage)
-            f_txt = my_font.render('You attacked the Test Dummy', False, (255, 255, 255))
-            f_txt2 = my_font.render('You dealt ' + str((damage)) + ' damage', False, (255, 255, 255))
-            screen.blit(f_txt, (230, 20))
-            screen.blit(f_txt2, (260, 40))
+            i = 0
+            while i < 10000:
+                f_txt = my_font.render('You attacked the Test Dummy', False, (255, 255, 255))
+                f_txt2 = my_font.render('You dealt ' + str((damage)) + ' damage', False, (255, 255, 255))
+                screen.blit(f_txt, (230, 20))
+                #screen.blit(f_txt2, (260, 40))
+                print (i)
+                i = i + 1
+            #end while
             click_detectorf = False
             if Enemeyr.HP <= 0:
              end_txt = my_font.render('You killed the Test Dummy', False, (255, 255, 255))
