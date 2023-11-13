@@ -180,7 +180,7 @@ all_sprites_group = pygame.sprite.Group()
 clock = pygame.time.Clock() 
 
 # Create the enemies 
-Enemeyr = Enemy(RED, 30, 30, 300000)
+Enemeyr = Enemy(RED, 30, 30, 50)
 all_sprites_group.add(Enemeyr) 
 enemy_group.add(Enemeyr)
 fight_group.add(Enemeyr)
@@ -237,6 +237,7 @@ textcooldown_f = 0
 textcooldown_h = 0
 textcooldown_d = 0
 textcooldown_r = 0
+pause_time = 0
 
 
 # Define cooldown duration (5 seconds)
@@ -343,19 +344,33 @@ while not done:
         if click_detectorf:
             damage = get_damage()
             Enemeyr.enemy_attacked(damage)
-            i = 0
-            while i < 10000:
-                f_txt = my_font.render('You attacked the Test Dummy', False, (255, 255, 255))
-                f_txt2 = my_font.render('You dealt ' + str((damage)) + ' damage', False, (255, 255, 255))
-                screen.blit(f_txt, (230, 20))
-                #screen.blit(f_txt2, (260, 40))
-                print (i)
-                i = i + 1
-            #end while
-            click_detectorf = False
+
+            # while i < 10000:
+            #     f_txt = my_font.render('You attacked the Test Dummy', False, (255, 255, 255))
+            #     f_txt2 = my_font.render('You dealt ' + str((damage)) + ' damage', False, (255, 255, 255))
+            #     screen.blit(f_txt, (230, 20))
+            #     #screen.blit(f_txt2, (260, 40))
+            #     print (i)
+            #     i = i + 1
+            # #end while
+
+
+            f_txt = my_font.render('You attacked the Test Dummy', False, (255, 255, 255))
+            f_txt2 = my_font.render('You dealt ' + str((damage)) + ' damage', False, (255, 255, 255))
+            screen.blit(f_txt, (230, 20))
+            screen.blit(f_txt2, (260, 40))
+
+
+            if pause_time > 180:
+                click_detectorf = False
+                pause_time = 0
+            else:
+                pause_time+=1
+            # end if  
             if Enemeyr.HP <= 0:
              end_txt = my_font.render('You killed the Test Dummy', False, (255, 255, 255))
              screen.blit(end_txt, (230, 60))  
+        
         
         if click_detectorh:
             if Player.HP == Player.MaxHP:
