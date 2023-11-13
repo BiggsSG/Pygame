@@ -240,6 +240,7 @@ textcooldown_h = 0
 textcooldown_d = 0
 textcooldown_r = 0
 pause_time = 0
+damage_flag= 0
 turnflag = 1
 
 
@@ -346,8 +347,11 @@ while not done:
 
         if click_detectorf:
             turnflag = 1
-            damage = get_damage()
-            Enemeyr.enemy_attacked(damage)
+            if damage_flag == 0:
+                damage = get_damage()
+                Enemeyr.enemy_attacked(damage)
+                damage_flag = 1
+            # end if
 
             # while i < 10000:
             #     f_txt = my_font.render('You attacked the Test Dummy', False, (255, 255, 255))
@@ -368,6 +372,7 @@ while not done:
             if pause_time > 180:
                 click_detectorf = False
                 pause_time = 0
+                damage_flag = 0
             else:
                 pause_time+=1
             # end if  
@@ -420,13 +425,13 @@ while not done:
             Player.player_attacked(damage)
             e_txt = my_font.render('You have been attacked', False, (255, 255, 255))
             e_txt2 = my_font.render('You took ' + str((damage)) + ' damage', False, (255, 255, 255))
-            screen.blit(e_txt, (230, 20))
-            screen.blit(e_txt2, (260, 40))
+           # screen.blit(e_txt, (230, 20))
+           # screen.blit(e_txt2, (260, 40))
             turnflag = 1
             cooldown_duration = 3
             if Player.HP <= 0:
                 lose_txt = my_font.render('You have perished', False, (255, 255, 255))
-                screen.blit(lose_txt, (230, 60))
+             #   screen.blit(lose_txt, (230, 60))
 
 
 
