@@ -116,6 +116,8 @@ class Player(pygame.sprite.Sprite):
         self.Defend = isdefending
         self.HP = self.HP + 5
 
+    def player_attacked(self, damage):
+        self.HP = self.HP - damage
 
     def update(self): 
         self.rect.x += self.movex
@@ -238,6 +240,7 @@ textcooldown_h = 0
 textcooldown_d = 0
 textcooldown_r = 0
 pause_time = 0
+turnflag = 1
 
 
 # Define cooldown duration (5 seconds)
@@ -342,6 +345,7 @@ while not done:
 
 
         if click_detectorf:
+            turnflag = 1
             damage = get_damage()
             Enemeyr.enemy_attacked(damage)
 
@@ -369,10 +373,12 @@ while not done:
             # end if  
             if Enemeyr.HP <= 0:
              end_txt = my_font.render('You killed the Test Dummy', False, (255, 255, 255))
-             screen.blit(end_txt, (230, 60))  
+             screen.blit(end_txt, (230, 60))
+             turnflag = 2   
         
         
         if click_detectorh:
+            turnflag = 1
             if Player.HP == Player.MaxHP:
                 hf_txt = my_font.render('You can not heal over max HP', False, (255, 255, 255))
                 screen.blit(hf_txt, (230, 20))   
@@ -389,19 +395,41 @@ while not done:
                 if Player.MP <= 0:
                     Player.MP = 0
             click_detectorh = False
+            turnflag = 2 
         
         if click_detectord:
+            turnflag = 1
             isdefending = True
             Player.set_defending
             d_txt = my_font.render('You have successfully defended', False, (255, 255, 255))
             screen.blit(d_txt, (230, 20))
             click_detectord = False
-
+            turnflag = 2 
         
         if click_detectorr:
+            turnflag = 1
             r_txt = my_font.render('You can not flee from this battle', False, (255, 255, 255))
             screen.blit(r_txt, (230, 20))
-            click_detectorr = False    
+            click_detectorr = False
+            turnflag = 2
+            
+
+        if turnflag == 2:
+            cooldown_duration == 99999
+            damage = get_damage()
+            Player.player_attacked(damage)
+            e_txt = my_font.render('You have been attacked', False, (255, 255, 255))
+            e_txt2 = my_font.render('You took ' + str((damage)) + ' damage', False, (255, 255, 255))
+            screen.blit(e_txt, (230, 20))
+            screen.blit(e_txt2, (260, 40))
+            turnflag = 1
+            cooldown_duration = 3
+            if Player.HP <= 0:
+                lose_txt = my_font.render('You have perished', False, (255, 255, 255))
+                screen.blit(lose_txt, (230, 60))
+
+
+
 
         #set player pos
         Player.player_setx_val(240)
@@ -452,6 +480,13 @@ while not done:
         #set area text
         Area2 = my_fontbig.render('Grasslands: Fight', False, (255, 255, 255))
         screen.blit(Area2, (5, 5))
+        #if turnflag == 1:
+            #Turn = my_fontbig.render('Your Turn: Choose an action ', False, (255, 255, 255))
+            #screen.blit(Turn, (5, 50))
+        #if turnflag == 2:
+            #screen.blit(Turn, (999, 999))
+            #Turn2 = my_fontbig.render('Enemy Turn: Prepare for the worst ', False, (255, 255, 255))
+            #screen.blit(Turn, (5, 50))
 
         #set button texts
         Button1 = my_fontbig.render('Fight', False, (0, 0, 0))
