@@ -50,7 +50,7 @@ class Enemy(pygame.sprite.Sprite):
         self.rect = self.image.get_rect() 
         self.rect.x = 640
         self.rect.y = 240
-        self.HP = 50
+        self.HP = 5
 
     def enemy_setx_val(self, x):
         self.rect.x = x
@@ -75,7 +75,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.y = 500
         self.movex = 0
         self.movey = 0
-        self.HP = 5
+        self.HP = 50
         self.MaxHP = 50
         self.MP = 5
         self.MaxMP = 5
@@ -381,7 +381,10 @@ while not done:
 
             if pause_time > 180:
                 click_detectorf = False
-                turnflag = 2  
+                if Enemeyr.HP <= 0:
+                    turnflag = 3
+                else:
+                    turnflag = 2  
                 pause_time = 0
                 damage_flag = 0
             else:
@@ -482,7 +485,7 @@ while not done:
                 enemy_flag = 1
                 #end if
             #end if
-
+    
             e_txt = my_font.render('You have been attacked', False, (255, 255, 255))
             e_txt2 = my_font.render('You took ' + str((damage)) + ' damage', False, (255, 255, 255))
             screen.blit(e_txt, (240, 20))
@@ -498,8 +501,19 @@ while not done:
             else:
                 pause_time+=1
             # end if   
-
-
+        
+        if turnflag == 3:
+            t_txt = my_font.render('You have finished the tutorial', False, (255, 255, 255))
+            t2_txt = my_font.render('you will be taken back the open world', False, (255, 255, 255))
+            screen.blit(t_txt, (240, 20))
+            screen.blit(t2_txt, (210, 40))
+            if pause_time > 180:
+                pause_time = 0
+                gamestate = 3
+            else:
+                pause_time+=1
+            #end if
+        #end if
 
 
         #set player pos
@@ -509,6 +523,9 @@ while not done:
         #set enemy pos
         Enemeyr.enemy_setx_val(450)
         Enemeyr.enemy_sety_val(175)
+        if Enemeyr.HP <= 0:
+            Enemeyr.enemy_setx_val(999)
+            Enemeyr.enemy_sety_val(999)
 
         #set fight button pos
         Buttonf.button_setx_val(40)
@@ -595,6 +612,48 @@ while not done:
         pygame.draw.rect(screen, BLACK, (526, 365, 4, 170))
         pygame.draw.rect(screen, BLACK, (180, 532, 350, 4))
         pygame.draw.rect(screen, BLACK, (180, 365, 350, 4))
+    
+    if gamestate == 3:
+        # -- User inputs here
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                done = True
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                # Check if the mouse button was clicked on the NPC sprite
+                if event.button == 1 and NPCr.rect.collidepoint(event.pos):
+                    click_detector = True
+                # Check if the mouse button was clicked on the NPC sprite
+                if event.button == 1 and Enemeyr.rect.collidepoint(event.pos):
+                    click_detector2 = True
+            elif event.type == pygame.KEYDOWN:  # - a key is down
+                if event.key == pygame.K_a:  # - if the left key is pressed
+                    Player.player_set_movement(-4, 0)  # speed set to -3
+                elif event.key == pygame.K_d:  # - if the right key is pressed
+                    Player.player_set_movement(4, 0)  # speed set to 3
+                elif event.key == pygame.K_w:
+                    Player.player_set_movement(0, -4)
+                elif event.key == pygame.K_s:
+                    Player.player_set_movement(0, 4)
+            elif event.type == pygame.KEYUP:  # - a key released
+                if event.key in (pygame.K_a, pygame.K_d, pygame.K_w, pygame.K_s):
+                    keys = pygame.key.get_pressed()
+                    if not (keys[pygame.K_a] or keys[pygame.K_d] or keys[pygame.K_w] or keys[pygame.K_s]):
+                        Player.player_end_movement()  # speed set to 0
+
+        all_sprites_group.update()
+
+        # Clear the screen if no collision
+        screen.fill(GREEN)
+
+        all_sprites_group.draw(screen)
+
+        # Display text if NPC sprite is clicked
+        if click_detector:
+            af_txt = my_font.render('Well done on defeating the enemy', False, (255, 255, 255))
+            af_txt2 = my_font.render('more fights await you', False, (255, 255, 255))
+            screen.blit(af_txt, (230, 20))
+            screen.blit(af_txt2, (260, 40))
+
 
     # -- flip display to reveal new position of objects
     pygame.display.flip()
