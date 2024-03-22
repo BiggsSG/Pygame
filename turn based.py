@@ -50,7 +50,7 @@ class Enemy(pygame.sprite.Sprite):
         self.rect = self.image.get_rect() 
         self.rect.x = 640
         self.rect.y = 240
-        self.HP = 50
+        self.HP = 5
 
     def enemy_setx_val(self, x):
         self.rect.x = x
@@ -84,6 +84,8 @@ class Player(pygame.sprite.Sprite):
         self.Defend = False
         self.Flee = 0 
         self.escaped = False
+        self.money = 0
+        self.exp = 0
 
     def player_set_movement(self, x, y):
         self.movex += x
@@ -249,7 +251,9 @@ burst_flag = 0
 enemy_flag = 0
 enemy_type = 0
 turnflag = 1
-healed_this_iteration = False
+full_health = 0
+max_health = 0
+healed = 0
 
 
 # Define cooldown duration (5 seconds)
@@ -413,36 +417,52 @@ while not done:
              
         
         if click_detectorh:
-            if not healed_this_iteration:  # Check if healing has already been performed in this iteration
-                turnflag = 1
-
-                if Player.HP == Player.MaxHP:
-                    hf_txt = my_font.render('You cannot heal over max HP', False, (255, 255, 255))
-                    screen.blit(hf_txt, (230, 20)) 
-
-                elif Player.HP >= 45:
-                    Player.HP = 50
-                    Player.MP = Player.MP - 1
-                    h_txt = my_font.render('You have healed to full', False, (255, 255, 255))
-                    screen.blit(h_txt, (230, 20))
+            turnflag = 1
+            if heal_flag == 0 and Player.MP > 0:
+                if  Player.HP < 45:
+                    Player.use_mp(1)
+                    Player.player_heal(5)
                     heal_flag = 1
+                    healed = 1
+                elif Player.HP >= 45 and Player.HP < 50:
+                    Player.use_mp(1)
+                    Player.HP = 50
+                    heal_flag = 1
+                    max_health = 1
+                elif Player.HP == Player.MaxHP:
+                    full_health = 1
+            if Player.MP == 0:
+                h3_txt = my_font.render('You have no mana', False, (255, 255, 255))
+                screen.blit(h3_txt, (230, 20)) 
+            #end if
 
-                elif Player.HP < 45 and Player.MP > 0:
-                    if Player.HP + 5 <= Player.MaxHP:
-                        h2_txt = my_font.render('You have successfully healed', False, (255, 255, 255))
-                        screen.blit(h2_txt, (230, 20)) 
-                        Player.HP = min(Player.HP + 5, Player.MaxHP)
-                        Player.MP = Player.MP - 1
-                        heal_flag = 1  
+            if full_health == 1:
+                hf_txt = my_font.render('You can not heal over max HP', False, (255, 255, 255))
+                screen.blit(hf_txt, (230, 20))
+                    
+             
+            if max_health == 1:
+                h_txt = my_font.render('You have healed to full', False, (255, 255, 255))
+                screen.blit(h_txt, (230, 20))
 
-                if Player.MP <= 0:
-                    Player.MP = 0
-                    heal_flag = 1                    
+            if healed == 1:
+                h2_txt = my_font.render('You have successfully healed', False, (255, 255, 255))
+                screen.blit(h2_txt, (230, 20)) 
+                     
+            if Player.MP <= 0:
+                Player.MP = 0
 
-                healed_this_iteration = True  # Set the flag to True after healing in this iteration
-    
-
-
+            if pause_time > 180:
+                click_detectorh = False
+                turnflag = 2  
+                pause_time = 0
+                heal_flag = 0
+                full_health = 0
+                max_health = 0
+                healed = 0
+            else:
+                pause_time+=1
+            # end if 
         
         if click_detectord:
             turnflag = 1
@@ -523,10 +543,12 @@ while not done:
             # end if   
         
         if turnflag == 3:
-            t_txt = my_font.render('You have finished the tutorial', False, (255, 255, 255))
-            t2_txt = my_font.render('you will be taken back the open world', False, (255, 255, 255))
-            screen.blit(t_txt, (240, 20))
-            screen.blit(t2_txt, (210, 40))
+            t_txt = my_font.render('You have gained 5 EXP and 10 Gold', False, (255, 255, 255))
+            t2_txt = my_font.render('You have finished the tutorial', False, (255, 255, 255))
+            t3_txt = my_font.render('you will be taken back the open world', False, (255, 255, 255))
+            screen.blit(t_txt, (220, 20))
+            screen.blit(t2_txt, (240, 40))
+            screen.blit(t3_txt, (210, 60))
             if pause_time > 180:
                 pause_time = 0
                 gamestate = 3
@@ -539,6 +561,9 @@ while not done:
         #set player pos
         Player.player_setx_val(240)
         Player.player_sety_val(175)
+        if Player.HP <= 0:
+            Player.enemy_setx_val(999)
+            Player.enemy_sety_val(999)
 
         #set enemy pos
         Enemeyr.enemy_setx_val(450)
