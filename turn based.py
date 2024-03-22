@@ -50,7 +50,7 @@ class Enemy(pygame.sprite.Sprite):
         self.rect = self.image.get_rect() 
         self.rect.x = 640
         self.rect.y = 240
-        self.HP = 5
+        self.HP = 50
 
     def enemy_setx_val(self, x):
         self.rect.x = x
@@ -66,7 +66,7 @@ class Enemy(pygame.sprite.Sprite):
 
 ## -- Define the class Player which is a sprite
 class Player(pygame.sprite.Sprite): 
-    def __init__(self, color, width, height, HP, MP): 
+    def __init__(self, color, width, height, HP, MP, Burst): 
         super().__init__()
         self.image = pygame.Surface([width, height]) 
         self.image.fill(color) 
@@ -79,6 +79,8 @@ class Player(pygame.sprite.Sprite):
         self.MaxHP = 50
         self.MP = 5
         self.MaxMP = 5
+        self.Burst = 5
+        self.MaxBurst = 5
         self.Defend = False
         self.Flee = 0 
         self.escaped = False
@@ -200,7 +202,7 @@ all_sprites_group.add(NPCr)
 npc_group.add(NPCr)
 
 # Create the player
-Player = Player(BLUE, 30, 30, 50, 5)
+Player = Player(BLUE, 30, 30, 50, 5, 0)
 all_sprites_group.add(Player)
 fight_group.add(Player) 
 
@@ -243,9 +245,11 @@ damage_flag= 0
 heal_flag = 0
 defend_flag = 0
 flee_flag = 0
+burst_flag = 0
 enemy_flag = 0
 enemy_type = 0
 turnflag = 1
+healed_this_iteration = False
 
 
 # Define cooldown duration (5 seconds)
@@ -358,6 +362,12 @@ while not done:
                 damage = get_damage()
                 Enemeyr.enemy_attacked(damage)
                 damage_flag = 1
+            if Player.Burst == 5:
+               damage = get_damage()
+               Enemeyr.enemy_attacked(damage * 2)
+               Player.Burst = 0
+               burst_flag = 1 
+               damage_flag = 1 
             # end if
 
             # while i < 10000:
@@ -369,11 +379,17 @@ while not done:
             #     i = i + 1
             # #end while
 
+            if burst_flag == 1:
+                burst_txt = my_font.render('You unleashed a burst attack!', False, (255, 255, 255))
+                burst_txt2 = my_font.render('You dealt ' + str((damage*2)) + ' damage', False, (255, 255, 255))
+                screen.blit(burst_txt, (230, 20))
+                screen.blit(burst_txt2, (260, 40))
+            else:
+                f_txt = my_font.render('You attacked the Test Dummy', False, (255, 255, 255))
+                f_txt2 = my_font.render('You dealt ' + str((damage)) + ' damage', False, (255, 255, 255))
+                screen.blit(f_txt, (230, 20))
+                screen.blit(f_txt2, (260, 40))
 
-            f_txt = my_font.render('You attacked the Test Dummy', False, (255, 255, 255))
-            f_txt2 = my_font.render('You dealt ' + str((damage)) + ' damage', False, (255, 255, 255))
-            screen.blit(f_txt, (230, 20))
-            screen.blit(f_txt2, (260, 40))
 
             if Enemeyr.HP <= 0:
              end_txt = my_font.render('You killed the Test Dummy', False, (255, 255, 255))
@@ -387,42 +403,46 @@ while not done:
                     turnflag = 2  
                 pause_time = 0
                 damage_flag = 0
+                if burst_flag == 1:
+                    burst_flag = 0
+                else: 
+                    Player.Burst = Player.Burst + 1
             else:
                 pause_time+=1
             # end if  
              
         
         if click_detectorh:
-            turnflag = 1
-            if heal_flag == 0:
-                Player.use_mp(1)
-                Player.player_heal(5)
-                heal_flag = 1
-            #end if
+            if not healed_this_iteration:  # Check if healing has already been performed in this iteration
+                turnflag = 1
 
-            if Player.HP == Player.MaxHP:
-                hf_txt = my_font.render('You can not heal over max HP', False, (255, 255, 255))
-                screen.blit(hf_txt, (230, 20)) 
-                    
-            if Player.HP < Player.MaxHP: 
-                if Player.HP >= 45:
+                if Player.HP == Player.MaxHP:
+                    hf_txt = my_font.render('You cannot heal over max HP', False, (255, 255, 255))
+                    screen.blit(hf_txt, (230, 20)) 
+
+                elif Player.HP >= 45:
                     Player.HP = 50
+                    Player.MP = Player.MP - 1
                     h_txt = my_font.render('You have healed to full', False, (255, 255, 255))
                     screen.blit(h_txt, (230, 20))
-                if Player.HP < 45:
-                   h2_txt = my_font.render('You have successfully healed', False, (255, 255, 255))
-                   screen.blit(h2_txt, (230, 20))   
+                    heal_flag = 1
+
+                elif Player.HP < 45 and Player.MP > 0:
+                    if Player.HP + 5 <= Player.MaxHP:
+                        h2_txt = my_font.render('You have successfully healed', False, (255, 255, 255))
+                        screen.blit(h2_txt, (230, 20)) 
+                        Player.HP = min(Player.HP + 5, Player.MaxHP)
+                        Player.MP = Player.MP - 1
+                        heal_flag = 1  
+
                 if Player.MP <= 0:
                     Player.MP = 0
+                    heal_flag = 1                    
 
-            if pause_time > 180:
-                click_detectorh = False
-                turnflag = 2  
-                pause_time = 0
-                heal_flag = 0
-            else:
-                pause_time+=1
-            # end if   
+                healed_this_iteration = True  # Set the flag to True after healing in this iteration
+    
+
+
         
         if click_detectord:
             turnflag = 1
@@ -565,6 +585,11 @@ while not done:
         pygame.draw.rect(screen, RED, (335, 409, Player.MaxMP*30, 20))
         pygame.draw.rect(screen, PURPLE, (335, 409, Player.MP*30, 20))
 
+        #draw the burst bar
+        pygame.draw.rect(screen, BLACK, (335, 444, Player.MaxBurst*30 + 3, 24))
+        pygame.draw.rect(screen, RED, (335, 444, Player.MaxBurst*30, 20))
+        pygame.draw.rect(screen, WHITE, (335, 444, Player.Burst*30, 20))
+
         #set area text
         Area2 = my_fontbig.render('Grasslands: Fight', False, (255, 255, 255))
         screen.blit(Area2, (5, 5))
@@ -589,6 +614,8 @@ while not done:
         screen.blit(Health, (200, 365))
         MagicP = my_fontbig.render('MP:' + str(Player.MP) + "/" + str(Player.MaxMP), False, (0, 0, 0))
         screen.blit(MagicP, (200, 400))
+        Burst = my_fontbig.render('Burst:' + str(Player.Burst) + "/" + str(Player.MaxBurst), False, (0, 0, 0))
+        screen.blit(Burst, (200, 435))
 
         #draw button backdrops
         #fight backdrop
