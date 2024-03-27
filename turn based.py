@@ -661,11 +661,15 @@ while not done:
             if Player.HP <= 0:
                 lose_txt = my_font.render('You have perished', False, (255, 255, 255))
                 screen.blit(lose_txt, (262, 60))
+        
             
             if pause_time > 180:
                 turnflag = 1
                 pause_time = 0
                 enemy_flag = 0
+                if Player.HP <= 0:
+                    pygame.quit()
+                    sys.exit()
             else:
                 pause_time+=1
             # end if   
