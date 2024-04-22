@@ -1005,7 +1005,7 @@ while not done:
         NPCr.NPC_setx_val(999)
         NPCr.NPC_sety_val(999)
 
-        # Display text if Enemy sprite is clicked
+        # Display text if Boss sprite is clicked
         if click_detector4:
             gamestate = 5
 
@@ -1077,13 +1077,13 @@ while not done:
             else:
                 f_txt = my_font.render('You attacked the Boss', False, (255, 255, 255))
                 f_txt2 = my_font.render('You dealt ' + str((damage)) + ' damage', False, (255, 255, 255))
-                screen.blit(f_txt, (230, 20))
-                screen.blit(f_txt2, (260, 40))
+                screen.blit(f_txt, (230, 40))
+                screen.blit(f_txt2, (260, 60))
 
 
             if Boss.HP <= 0:
              end_txt = my_font.render('You killed the Boss', False, (255, 255, 255))
-             screen.blit(end_txt, (230, 60))
+             screen.blit(end_txt, (290, 80))
 
             if pause_time > 180:
                 click_detectorf = False
@@ -1231,11 +1231,12 @@ while not done:
         if turnflag == 3:
             bt_txt = my_font.render('You have beaten the boss well done', False, (255, 255, 255))
             bt2_txt = my_font.render('You have beaten the game, the game will now close', False, (255, 255, 255))
-            screen.blit(bt_txt, (220, 20))
-            screen.blit(bt2_txt, (190, 40))
+            screen.blit(bt_txt, (220, 40))
+            screen.blit(bt2_txt, (190, 60))
     
             if pause_time > 180:
-                pygame.quit
+                pygame.quit()
+                sys.exit()
             else:
                 pause_time+=1
             #end if
