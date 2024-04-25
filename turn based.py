@@ -631,11 +631,14 @@ while not done:
                 screen.blit(rf_txt, (230, 20))
             
             
-            if pause_time > 180:
+            if enemy_type == 0 and Player.escaped == False and pause_time > 180:
                 click_detectorr = False
                 turnflag = 2  
                 pause_time = 0
                 flee_flag = 0
+            elif enemy_type != 0 and Player.escaped == True and pause_time > 180:
+                pygame.quit
+                sys.exit
             else:
                 pause_time+=1
             # end if  
@@ -1072,8 +1075,8 @@ while not done:
             if burst_flag == 1:
                 burst_txt = my_font.render('You unleashed a burst attack!', False, (255, 255, 255))
                 burst_txt2 = my_font.render('You dealt ' + str((damage*2)) + ' damage', False, (255, 255, 255))
-                screen.blit(burst_txt, (230, 20))
-                screen.blit(burst_txt2, (260, 40))
+                screen.blit(burst_txt, (230, 40))
+                screen.blit(burst_txt2, (260, 60))
             else:
                 f_txt = my_font.render('You attacked the Boss', False, (255, 255, 255))
                 f_txt2 = my_font.render('You dealt ' + str((damage)) + ' damage', False, (255, 255, 255))
