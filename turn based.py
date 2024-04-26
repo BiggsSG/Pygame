@@ -118,7 +118,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.y = 500
         self.movex = 0
         self.movey = 0
-        self.HP = 50
+        self.HP = 5
         self.MaxHP = 50
         self.MP = 5
         self.MaxMP = 5
